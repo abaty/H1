@@ -20,7 +20,7 @@ public:
 };
 
 bool MultTool::matchingMults( int multSig, int multBkg){
-  if(multSig < 20){
+  if(multSig < 25){
     if(multSig == multBkg) return true;
     else return false;
   }
