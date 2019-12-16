@@ -117,18 +117,19 @@ public :
    TBranch        *b_passTightREC_mini;   //!
    TBranch        *b_passLooseREC_mini;   //!
 
-   H1Tree(TTree *tree=0);
+   H1Tree(TTree *tree=0, bool allBranchesActive = true);
    virtual ~H1Tree();
+   virtual void ActivateBranches();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree);
+   virtual void     Init(TTree *tree, bool allBranchesActive = true);
 //   virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };
 
-H1Tree::H1Tree(TTree *tree) : fChain(0) 
+H1Tree::H1Tree(TTree *tree, bool allBranchesActive) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -140,7 +141,7 @@ H1Tree::H1Tree(TTree *tree) : fChain(0)
       f->GetObject("miniTree",tree);
 
    }
-   Init(tree);
+   Init(tree, allBranchesActive);
 }
 
 H1Tree::~H1Tree()
@@ -174,7 +175,7 @@ Long64_t H1Tree::LoadTree(Long64_t entry)
    return centry;
 }
 
-void H1Tree::Init(TTree *tree)
+void H1Tree::Init(TTree *tree, bool allBranchesActive)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -235,7 +236,22 @@ void H1Tree::Init(TTree *tree)
    fChain->SetBranchAddress("passREC_mini", passREC_mini, &b_passREC_mini);
    fChain->SetBranchAddress("passTightREC_mini", passTightREC_mini, &b_passTightREC_mini);
    fChain->SetBranchAddress("passLooseREC_mini", passLooseREC_mini, &b_passLooseREC_mini);
+
+   if( ! allBranchesActive) fChain->SetBranchStatus("*",0);
+
    Notify();
+}
+
+void H1Tree::ActivateBranches(){
+  b_w_mini->SetStatus(1);
+  b_Q2REC_es_mini->SetStatus(1);
+  b_eventpass_mini->SetStatus(1);
+  b_nRECtrack_mini->SetStatus(1);
+  b_pxREC_mini->SetStatus(1);
+  b_pyREC_mini->SetStatus(1);
+  b_etaREC_mini->SetStatus(1);
+  b_phiREC_mini->SetStatus(1);
+  b_passREC_mini->SetStatus(1);
 }
 
 Bool_t H1Tree::Notify()

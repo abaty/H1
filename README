@@ -1,1 +1,5 @@
-H1 stuff
+Build the code by typing 'make'
+
+code can be run by using the command
+
+./bin/TwoParticleCorrelation.exe

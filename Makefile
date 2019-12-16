@@ -1,6 +1,6 @@
 ROOT=`root-config --cflags --glibs`
 CXX=g++
-CXXFLAGS=-Wall -O2 -Wextra -Wno-unused-local-typedefs -Wno-deprecated-declarations -std=c++11
+CXXFLAGS=-Wall -O3 -Wextra -Wno-unused-local-typedefs -Wno-deprecated-declarations -std=c++11
 
 MKDIR_BIN=mkdir -p $(PWD)/bin
 
