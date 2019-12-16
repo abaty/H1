@@ -1,0 +1,1 @@
+rooteventselector -s "nRECtrack_mini > 1" /home/zt7/H1/data_highE_0607_noReweight_Tree_forCorrelation.root:miniTree H1SkimTree.root > skim.txt 2>&1 & 

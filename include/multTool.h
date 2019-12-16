@@ -2,6 +2,9 @@
 #define MULTTOOL
 
 #include <vector>
+#include "include/trackSelection.h"
+#include "include/H1Tree.h"
+
 
 class MultTool{
   
@@ -11,9 +14,37 @@ public:
   static constexpr int multBinLowerBoundary[nMultBins] = {2, 6, 10, 15, 20, 0};
   static constexpr int multBinUpperBoundary[nMultBins] = {6, 10, 15, 20, 999, 999};
 
+  bool matchingMults( int multSig, int multBkg);
+  std::vector< int > getGoodTracks( H1Tree * t );
   std::vector< int > getMultBins( int mult );
-
 };
+
+bool MultTool::matchingMults( int multSig, int multBkg){
+  if(multSig < 20){
+    if(multSig == multBkg) return true;
+    else return false;
+  }
+  if(multSig<30){
+    if(multSig == multBkg || multSig == multBkg+1 || multSig == multBkg-1) return true;
+    else return false;
+  }
+  if(multSig>=30){
+    if(multBkg>=30) return true;
+    else return false;
+  }
+  return false;
+}
+
+std::vector< int > MultTool::getGoodTracks( H1Tree * t ){
+  std::vector< int > goodTracks;
+  for( int j = 0; j < t->nRECtrack_mini; j++){
+    if( ! passesTrackSelection( t, j ) ) continue;
+    goodTracks.push_back( j );
+  }
+  
+  return goodTracks;
+}
+
 
 std::vector< int > MultTool::getMultBins( int mult ){
   std::vector< int > indexes;
