@@ -31,8 +31,8 @@ void twoParticleCorrelation(){
   tMix.ActivateBranches();  
 
   //Setting up some output stuff
-  const int nBinsdEta = 2*28;
-  const int nBinsdPhi = 2*28;
+  const int nBinsdEta = 2*14;
+  const int nBinsdPhi = 2*20;
   const float maxdEta =  2.8;
   float differentialElement = 2*maxdEta/nBinsdEta * 2 * TMath::Pi() / nBinsdPhi;
   TFile * out = TFile::Open("output.root","Recreate");

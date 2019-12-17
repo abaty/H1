@@ -244,6 +244,7 @@ void H1Tree::Init(TTree *tree, bool allBranchesActive)
 
 void H1Tree::ActivateBranches(){
   b_w_mini->SetStatus(1);
+  b_yREC_es_mini->SetStatus(1);
   b_Q2REC_es_mini->SetStatus(1);
   b_eventpass_mini->SetStatus(1);
   b_nRECtrack_mini->SetStatus(1);

@@ -4,12 +4,15 @@ CXXFLAGS=-Wall -O3 -Wextra -Wno-unused-local-typedefs -Wno-deprecated-declaratio
 
 MKDIR_BIN=mkdir -p $(PWD)/bin
 
-all: mkdirBin bin/TwoParticleCorrelation.exe
+all: mkdirBin bin/TwoParticleCorrelation.exe bin/TPCPlotting.exe
 
 mkdirBin:
 	$(MKDIR_BIN)
 bin/TwoParticleCorrelation.exe: src/TwoParticleCorrelation.cc
 	$(CXX) src/TwoParticleCorrelation.cc -o bin/TwoParticleCorrelation.exe  -I../include -pedantic -W $(CXXFLAGS) -Wshadow -fPIC -ldl $(ROOT) -I $(PWD)
+bin/TPCPlotting.exe: src/TPCPlotting.cc
+	$(CXX) src/TPCPlotting.cc -o bin/TPCPlotting.exe  -I../include -pedantic -W $(CXXFLAGS) -Wshadow -fPIC -ldl $(ROOT) -I $(PWD)
+
 
 clean:
 	rm -f *~
