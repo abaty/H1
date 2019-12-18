@@ -10,8 +10,9 @@
 #include "TMath.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "TComplex.h"
 
-void twoParticleCorrelation(){
+void twoParticleCorrelation(bool doCumulants22, bool doCumulants24){
   Timer timer = Timer();
   timer.Start();
   timer.StartSplit("Start Up");
@@ -45,10 +46,14 @@ void twoParticleCorrelation(){
   }
   float nEventsPerMult[ mt.nMultBins ] = {0};
 
+  TH1D * c2VsMult = new TH1D("c2VsMult",";N_{trk};c_{2}{2}",30,0,30);
+  float c2EventSum[mt.nMultBins] = {0};
+  float c2EventWSum[mt.nMultBins] = {0};
+  
   //event loop
-  for(int i = 0; i<inputTree->GetEntries(); i++){
-    timer.StartSplit("Loading Entries");
-  //for(int i = 0; i<500000; i++){
+  //for(int i = 0; i<inputTree->GetEntries(); i++){
+  timer.StartSplit("Loading Entries");
+  for(int i = 0; i<1500000; i++){
     if(i%100000 == 0) std::cout << "Event: " << i << "/" << inputTree->GetEntries() << std::endl;
     t.GetEntry(i);
 
@@ -66,16 +71,42 @@ void twoParticleCorrelation(){
     std::vector< int > multBins = mt.getMultBins( mult );
     for( int b = 0; b<multBins.size(); b++)  nEventsPerMult[ multBins[b] ] += eventWeight; 
 
+    //some stuff for cumulants if we want them
+
+    TComplex * c2Sum[mt.nMultBins];
+    float wSum[mt.nMultBins] = {0};
+    for(int j = 0; j < mt.nMultBins; j++){
+      c2Sum[j] = new TComplex(0,0,true);
+    }
+
     //signal loop over all pairs
     timer.StartSplit("Signal Correlations");
     for( int j = 0; j < goodTrks.size() ; j++){
       for(int k = j+1; k < goodTrks.size(); k++){
         float dEta = TMath::Abs( t.etaREC_mini[ goodTrks[j] ] - t.etaREC_mini[goodTrks[k] ] );
         float dPhi = TMath::ACos( TMath::Cos( t.phiREC_mini[ goodTrks[j] ] - t.phiREC_mini[ goodTrks[k] ] ) );
- 
+
         for( int b = 0; b<multBins.size(); b++)  mirroredTPCFill( twoParticleCorrSig[ multBins[b] ], dEta, dPhi, eventWeight / differentialElement / mult); 
+        
+        if(doCumulants22){
+          TComplex Q = TComplex( t.ptREC_mini[ goodTrks[j] ] * t.ptREC_mini[ goodTrks[k] ] , 2 * ( t.phiREC_mini[ goodTrks[j] ] - t.phiREC_mini[ goodTrks[k] ] ) , true );
+          //float wSumTemp = t.ptREC_mini[ goodTrks[j] ] * t.ptREC_mini[ goodTrks[k] ];
+          float wSumTemp = 1.0;
+          
+          for( int b = 0; b<multBins.size(); b++){
+            *(c2Sum[ multBins[b] ]) += Q;
+            wSum[ multBins[b]] += wSumTemp;
+          }  
+        }
       }
     }
+    if(doCumulants22){
+      for( int b = 0; b<multBins.size(); b++){
+        c2EventSum[multBins[b]] += (c2Sum[multBins[b]])->Re() * eventWeight;
+        c2EventWSum[multBins[b]] += wSum[multBins[b]] * eventWeight;
+      }
+    }
+
 
     //search for a mix event (ugly here)
     int mixOffset = 1;
@@ -122,8 +153,16 @@ void twoParticleCorrelation(){
     twoParticleCorrRat[i] = (TH2D*) twoParticleCorrSig[i]->Clone(Form("twoParticleCorrRat_%d_%d",mt.multBinLowerBoundary[i], mt.multBinUpperBoundary[i]));
     twoParticleCorrRat[i]->Divide(twoParticleCorrBkg[i]);
     twoParticleCorrRat[i]->Scale(twoParticleCorrBkg[i]->GetBinContent(twoParticleCorrBkg[i]->FindBin(0,0)));
+  
+    if(doCumulants22){
+      std::cout << i << " " << c2EventSum[i]/c2EventWSum[i] << std::endl;
+      if(i>=6){
+        c2VsMult->SetBinContent((i-6)+3, c2EventSum[i]/c2EventWSum[i]);
+        c2VsMult->SetBinError((i-6)+2,0);
+      }
+    }
   }
-
+ 
   out->Write();
 
   timer.Stop();
@@ -132,16 +171,18 @@ void twoParticleCorrelation(){
 
 int main(int argc, const char* argv[]){
 
-  twoParticleCorrelation();
 
-  /*
-  if(argc != 4)
+  
+  if(argc != 3)
   {
-    std::cout << "Usage: HGPythia <nEvents> <jobNumber> <outputName>" << std::endl;
+    std::cout << "Usage: HGPythia <do c2{2} (int)> <do c2{4} (int)>" << std::endl;
     return 1;
   }  
 
-  int nEvents = std::atoi(argv[1]); 
+  int doCumulants22 = std::atoi(argv[1]); 
+  int doCumulants24 = std::atoi(argv[2]); 
+  twoParticleCorrelation( (bool) doCumulants22, (bool) doCumulants24);
+  /*
   int RNGoffset = std::atoi(argv[2]); 
   std::string outputName = argv[3];
   */

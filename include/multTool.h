@@ -10,9 +10,9 @@ class MultTool{
   
 public:
 
-  static const int nMultBins = 6;
-  static constexpr int multBinLowerBoundary[nMultBins] = {2, 6, 10, 15, 20, 0};
-  static constexpr int multBinUpperBoundary[nMultBins] = {6, 10, 15, 20, 999, 999};
+  static const int nMultBins = 34;
+  static constexpr int multBinLowerBoundary[nMultBins] = {2, 6, 10, 15, 20, 0, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29};
+  static constexpr int multBinUpperBoundary[nMultBins] = {6, 10, 15, 20, 999, 999, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
 
   bool matchingMults( int multSig, int multBkg);
   std::vector< int > getGoodTracks( H1Tree * t );

@@ -97,7 +97,7 @@ void TPCPlotting(){
     l->SetBorderSize(0);
     l->SetTextSize(0.038);
     l->AddEntry((TObject*)0,"H1 Data","");
-    l->AddEntry((TObject*)0,"Q^{2} > 5 GeV^{2}","");
+    l->AddEntry((TObject*)0,"5 < Q^{2} < 100 GeV^{2}","");
     l->AddEntry((TObject*)0,"p_{T}^{trk}>0.15 GeV","");
     l->AddEntry((TObject*)0,"-1.2 < #eta^{trk} < 1.6","");
     l->AddEntry((TObject*)0,Form("%d #leq N^{trk} < %d",mt.multBinLowerBoundary[i], mt.multBinUpperBoundary[i]),"");
